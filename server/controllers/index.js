@@ -2,7 +2,8 @@
 const models = require('../models');
 
 // get the Cat model
-const { Cat } = models;
+//  Also get the Dog model
+const { Cat, Dog } = models;
 
 // default fake data so that we have something to work with until we make a real Cat
 const defaultData = {
@@ -150,6 +151,18 @@ const setName = async (req, res) => {
   });
 };
 
+const setDog = async (req, res) => {
+  if (!req.body.firstname || !req.body.lastname) {
+    return res.status(400).json({ error: 'name is required' });
+  }
+
+  const dogData = {
+    name: `${req.body.firstname} ${req.body.lastname}`,
+    breed: req.body.breed,
+    age: req.body.age,
+  };
+};
+
 // Function to handle searching a cat by name.
 const searchName = async (req, res) => {
   /* When the user makes a POST request, bodyParser populates req.body with the parameters
@@ -247,6 +260,7 @@ module.exports = {
   page3: hostPage3,
   getName,
   setName,
+  setDog,
   updateLast,
   searchName,
   notFound,
