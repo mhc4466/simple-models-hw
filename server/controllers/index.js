@@ -152,15 +152,30 @@ const setName = async (req, res) => {
 };
 
 const setDog = async (req, res) => {
-  if (!req.body.firstname || !req.body.lastname) {
-    return res.status(400).json({ error: 'name is required' });
+  if (!req.body.firstname || !req.body.lastname || !req.body.breed || !req.body.age) {
+    return res.status(400).json({ error: 'name, breed, and age are required' });
   }
 
   const dogData = {
     name: `${req.body.firstname} ${req.body.lastname}`,
     breed: req.body.breed,
-    age: req.body.age,
+    age: req.body.age
   };
+
+  const newDog = new Dog(dogData);
+
+  try {
+    await newDog.save();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({error: 'Failed to create dog'});
+  }
+
+  return res.json({
+    name: newDog.name,
+    breed: newDog.breed,
+    age: newDog.age
+  });
 };
 
 // Function to handle searching a cat by name.
@@ -206,6 +221,25 @@ const searchName = async (req, res) => {
 
   // Otherwise, we got a result and will send it back to the user.
   return res.json({ name: doc.name, beds: doc.bedsOwned });
+};
+
+const searchDog = async (req, res) => {
+  if (!req.query.name) {
+    return res.status(400).json({error: 'Name is required'});
+  }
+  let doc;
+  try {
+    doc = await Dog.updateOne({name: req.query.name }, {$inc : {age: 1}}).exec(); 
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Unexpected error'});
+  }
+
+  if (!doc) {
+    return res.json({ error: 'Dog not found'});
+  }
+
+  return res.json({ name: doc.name, age: doc.age});
 };
 
 /* A function for updating the last cat added to the database.
@@ -263,5 +297,6 @@ module.exports = {
   setDog,
   updateLast,
   searchName,
+  searchDog,
   notFound,
 };

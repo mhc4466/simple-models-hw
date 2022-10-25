@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+let DogModel = {};
+
 const DogSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -9,10 +11,12 @@ const DogSchema = new mongoose.Schema({
   breed: {
     type: String,
     trim: true,
+    required: true,
   },
   age: {
     type: Number,
     min: 0,
+    required: true,
   },
   createdDate: {
     type: Date,
@@ -20,6 +24,6 @@ const DogSchema = new mongoose.Schema({
   },
 });
 
-const DogModel = mongoose.model('Dog', DogSchema);
+DogModel = mongoose.model('Dog', DogSchema);
 
 module.exports = DogModel;
