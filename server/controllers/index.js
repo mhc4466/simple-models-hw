@@ -229,7 +229,10 @@ const searchDog = async (req, res) => {
   }
   let doc;
   try {
-    doc = await Dog.updateOne({name: req.query.name }, {$inc : {age: 1}}).exec(); 
+    //updateOne uses mongoDB's $inc operator to increase age by one. It doesn't return the result,
+    //so I find it manually after updating. Could probably use findByID or something instead
+    await Dog.updateOne({name: req.query.name }, {$inc : {age: 1}}).exec(); 
+    doc = await Dog.findOne({name: req.query.name }).exec(); 
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: 'Unexpected error'});
