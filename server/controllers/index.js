@@ -88,12 +88,12 @@ const hostPage4 = async (req, res) => {
   try {
     const docs = await Dog.find({}).lean().exec();
 
-    return res.render('page4', {dogs: docs });
+    return res.render('page4', { dogs: docs });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: 'failed to find dogs' });
   }
-}
+};
 
 // Get name will return the name of the last added cat.
 const getName = (req, res) => res.json({ name: lastAdded.name });
@@ -170,7 +170,7 @@ const setDog = async (req, res) => {
   const dogData = {
     name: `${req.body.firstname} ${req.body.lastname}`,
     breed: req.body.breed,
-    age: req.body.age
+    age: req.body.age,
   };
 
   const newDog = new Dog(dogData);
@@ -179,13 +179,13 @@ const setDog = async (req, res) => {
     await newDog.save();
   } catch (err) {
     console.log(err);
-    return res.status(500).json({error: 'Failed to create dog'});
+    return res.status(500).json({ error: 'Failed to create dog' });
   }
 
   return res.json({
     name: newDog.name,
     breed: newDog.breed,
-    age: newDog.age
+    age: newDog.age,
   });
 };
 
@@ -214,8 +214,10 @@ const searchName = async (req, res) => {
        matches the parameters. The downside is you cannot get multiple responses with it.
 
        One of three things will occur when trying to findOne in the database.
-        1) An error will be thrown, which will stop execution of the try block and move to the catch block.
-        2) Everything works, but the name was not found in the database returning an empty doc object.
+        1) An error will be thrown, which will stop execution of the try block and move to the
+            catch block.
+        2) Everything works, but the name was not found in the database returning an empty doc
+            object.
         3) Everything works, and an object matching the search is found.
     */
     doc = await Cat.findOne({ name: req.query.name }).exec();
@@ -236,24 +238,24 @@ const searchName = async (req, res) => {
 
 const searchDog = async (req, res) => {
   if (!req.query.name) {
-    return res.status(400).json({error: 'Name is required'});
+    return res.status(400).json({ error: 'Name is required' });
   }
   let doc;
   try {
-    //updateOne uses mongoDB's $inc operator to increase age by one. It doesn't return the result,
-    //so I find it manually after updating. Could probably use findByID or something instead
-    await Dog.updateOne({name: req.query.name }, {$inc : {age: 1}}).exec(); 
-    doc = await Dog.findOne({name: req.query.name }).exec(); 
+    // updateOne uses mongoDB's $inc operator to increase age by one. It doesn't return the result,
+    // so I find it manually after updating. Could probably use findByID or something instead
+    await Dog.updateOne({ name: req.query.name }, { $inc: { age: 1 } }).exec();
+    doc = await Dog.findOne({ name: req.query.name }).exec();
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: 'Unexpected error'});
+    return res.status(500).json({ error: 'Unexpected error' });
   }
 
   if (!doc) {
-    return res.json({ error: 'Dog not found'});
+    return res.json({ error: 'Dog not found' });
   }
 
-  return res.json({ name: doc.name, age: doc.age});
+  return res.json({ name: doc.name, age: doc.age });
 };
 
 /* A function for updating the last cat added to the database.
